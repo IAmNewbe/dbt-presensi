@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const apiClient = axios.create({
-  baseURL: 'http://192.168.254.74:3000/api', // Replace with your backend base URL
+  baseURL: 'http://36.92.168.180:7499/api', // Replace with your backend base URL
   headers: {
     'Content-Type': 'application/json',
   },
@@ -20,8 +20,8 @@ const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const baseUrl = '192.168.254.74';
-  const basePort = 3000;
+  const baseUrl = "36.92.168.180";
+  const basePort = 7499;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

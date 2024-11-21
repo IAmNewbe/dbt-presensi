@@ -64,7 +64,7 @@ const ChatCard = () => {
             key={key}
           >
             <div className="relative h-16 w-16 rounded-full">
-              <img src={UserOne} alt="User" />
+              <img src={UserOne} alt="User halo" />
               <span
                 className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 border-white"
                 style={{backgroundColor: 'green'}}

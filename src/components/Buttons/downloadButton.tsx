@@ -2,8 +2,8 @@ import React from 'react';
 import axios from 'axios';
 
 const DownloadButton: React.FC = () => {
-  const baseUrl = "192.168.254.74";
-  const basePort = 3000;
+  const baseUrl = "36.92.168.180";
+  const basePort = 7499;
   const date = new Date();
   const formattedDate = date.toISOString().split('T')[0];
   const handleDownload = async () => {

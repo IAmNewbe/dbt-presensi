@@ -13,8 +13,9 @@ export type Log = {
 };
 
 export const fetchLogData = async (): Promise<Log[]> => {
-  const baseUrl = '192.168.254.74';
-  const basePort = 3000;
+  const baseUrl = '36.92.168.180';
+  const basePort = 7499;
+  
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0];
   try {

@@ -21,13 +21,15 @@ export interface Daily {
 
 // Fetch groups from the API
 export const fetchTribes = async (): Promise<Tribe[]> => {
+  const baseUrl = "36.92.168.180";
+  const basePort = 7499;
   try {
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
     if (!token) {
       throw new Error('No authentication token found');
     }
-    const response = await axios.get('http://192.168.254.74:3000/api/get_group',{
+    const response = await axios.get(`http://${baseUrl}:${basePort}/api/get_group`,{
       headers: {
         Authorization: `Bearer ${token}`, // Include the token in the headers
       },
@@ -42,12 +44,14 @@ export const fetchTribes = async (): Promise<Tribe[]> => {
 };
 
 export const fetchDailyReport = async (date: string, lateTime: string): Promise<Daily[]> => {
+  const baseUrl = "36.92.168.180";
+  const basePort = 7499;
   try {
     const token = localStorage.getItem('token'); // Retrieve token from localStorage
     if (!token) throw new Error('Authentication token is missing');
 
     const response = await axios.post(
-      'http://192.168.254.74:3000/api/get_presence_report_json',
+      `http://${baseUrl}:${basePort}/api/get_presence_report_json`,
       { date, late_time: lateTime },
       {
         headers: {

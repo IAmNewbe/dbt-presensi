@@ -4,118 +4,167 @@ import BrandTwo from '../../images/brand/brand-02.svg';
 import BrandThree from '../../images/brand/brand-03.svg';
 import BrandFour from '../../images/brand/brand-04.svg';
 import BrandFive from '../../images/brand/brand-05.svg';
+import { fetchTribes, Tribe, Daily, fetchDailyReport } from '../../pages/Dashboard/Data';
+import React, { useState, useEffect } from 'react';
 
-const brandData: BRAND[] = [
-  {
-    logo: BrandOne,
-    name: 'Google',
-    visitors: 3.5,
-    revenues: '5,768',
-    sales: 590,
-    conversion: 4.8,
-  },
-  {
-    logo: BrandTwo,
-    name: 'Twitter',
-    visitors: 2.2,
-    revenues: '4,635',
-    sales: 467,
-    conversion: 4.3,
-  },
-  {
-    logo: BrandThree,
-    name: 'Github',
-    visitors: 2.1,
-    revenues: '4,290',
-    sales: 420,
-    conversion: 3.7,
-  },
-  {
-    logo: BrandFour,
-    name: 'Vimeo',
-    visitors: 1.5,
-    revenues: '3,580',
-    sales: 389,
-    conversion: 2.5,
-  },
-  {
-    logo: BrandFive,
-    name: 'Facebook',
-    visitors: 3.5,
-    revenues: '6,768',
-    sales: 390,
-    conversion: 4.2,
-  },
-];
+interface Employee {
+  employee_id: string;
+  person_name: string;
+  person_group: string;
+  first_access_time: string;
+  status: string;
+  auth_type: string;
+  attendance_status: string;
+  resource_name: string;
+}
+
+interface Group {
+  group: string;
+  data: Employee[];
+}
 
 const TableOne = () => {
+  const [dailyData, setDailyData] = useState<Daily[]>([]);
+  const [tribes, setTribes] = useState<Tribe[]>([]);
+  const [personGroupFilter, setPersonGroupFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('All');
+
+  const employeeData =  dailyData.flatMap((group) => group.data);
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatusFilter(event.target.value);
+  };
+
+  const filteredData = employeeData.filter((employee) => {
+    if (statusFilter === 'All') {
+      return true; // Show all employees
+    }
+    return employee.status === statusFilter;
+  });
+
+  useEffect(() => {
+    const getTribes = async () => {
+      try {
+        const data = await fetchTribes(); // Fetch tribes using the service
+        setTribes(data);
+      } catch (err) {
+        console.error('Error fetching tribes:', err);
+        // if (err.response?.status === 401) {
+        //   console.error('Unauthorized. Redirecting to login.');
+        //   // Redirect to sign-in page
+        //   window.location.href = '/';
+        // }
+      }
+    };
+    getTribes();
+  }, [dailyData]);
+
+  useEffect(() => {
+    // Simulate fetching Daily data
+    const fetchDailyData = async () => {
+      const today = new Date();
+      const formattedDate = today.toISOString().split('T')[0];
+      const late = "09:00";
+      const data = await fetchDailyReport(formattedDate, late);
+      setDailyData(data);
+      // console.log("table data : ");
+      // console.log(dailyData);
+    };
+    fetchDailyData();
+  }, [dailyData]);
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-        Top Channels
-      </h4>
+      <section className=''>
+        <h4 className="mb-3 text-xl font-semibold text-black dark:text-white">
+          Attendance Details Today
+        </h4>
 
+        <div className='flex gap-3 mb-2'>
+          <label className='float-right'>
+            Status:
+            <select className='ml-1 p-2 bg-bodydark1' value={statusFilter} onChange={handleStatusChange}>
+              <option value="All">All</option>
+              <option value="On Time">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Late">Late</option>
+            </select>
+          </label>
+        </div>
+      </section>
+      
+      
       <div className="flex flex-col">
         <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Source
+            <h5 className="text-sm font-medium uppercase">
+              Name
             </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Visitors
+            <h5 className="text-sm font-medium uppercase">
+              Tribe
             </h5>
           </div>
           <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Revenues
+            <h5 className="text-sm font-medium uppercase">
+              Status
+            </h5>
+          </div>
+          <div className="hidden p-2.5 text-center sm:block xl:py-5">
+            <h5 className="text-sm font-medium uppercase">
+              Check in Time
             </h5>
           </div>
           <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Sales
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Conversion
+            <h5 className="text-sm font-medium uppercase">
+              Office
             </h5>
           </div>
         </div>
 
-        {brandData.map((brand, key) => (
-          <div
+        {filteredData.map((brand, key) => (
+          <div 
             className={`grid grid-cols-3 sm:grid-cols-5 ${
-              key === brandData.length - 1
+              key === dailyData.length - 1
                 ? ''
                 : 'border-b border-stroke dark:border-strokedark'
             }`}
             key={key}
           >
-            <div className="flex items-center gap-3 p-2.5 xl:p-5">
-              <div className="flex-shrink-0">
-                <img src={brand.logo} alt="Brand" />
-              </div>
+            
+            <div className="flex items-center gap-3 p-2.5 text-sm">
+              {/* <div className="flex-shrink-0">
+                <img src={BrandOne} alt="Brand" />
+              </div> */}
               <p className="hidden text-black dark:text-white sm:block">
-                {brand.name}
+                {brand.person_name}
               </p>
             </div>
 
-            <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">{brand.visitors}K</p>
+            <div className="flex items-center justify-start p-2.5 text-sm">
+              <p className="text-black dark:text-white">{brand.person_group}</p>
             </div>
 
-            <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-meta-3">${brand.revenues}</p>
+            <div className="flex items-center justify-center p-2.5 text-sm">
+              <p 
+                className={`text-black dark:text-white ${
+                  brand.status === 'On Time' 
+                    ? 'text-green-600' 
+                    : brand.status === 'Absent' 
+                    ? 'text-red-500' 
+                    : brand.status === 'Late'
+                    ? 'text-[#6577F3]'
+                    : ''
+                }`}
+                >{brand.status}</p>
             </div>
 
-            <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-black dark:text-white">{brand.sales}</p>
+            <div className="hidden items-center justify-center p-2.5 sm:flex text-sm">
+              <p className="text-black dark:text-white">{brand.first_access_time}</p>
             </div>
 
-            <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-meta-5">{brand.conversion}%</p>
+            <div className="hidden items-center justify-center p-2.5 sm:flex text-sm">
+              <p className="text-meta-5">{brand.resource_name}</p>
             </div>
           </div>
         ))}
