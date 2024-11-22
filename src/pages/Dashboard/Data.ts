@@ -19,50 +19,67 @@ export interface Daily {
   }>;
 }
 
-// Fetch groups from the API
-export const fetchTribes = async (): Promise<Tribe[]> => {
-  const baseUrl = "36.92.168.180";
-  const basePort = 7499;
-  try {
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+// Common base URL configuration for API
+const API_BASE_URL = "http://36.92.168.180";
+const API_PORT = 7499;
 
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-    const response = await axios.get(`http://${baseUrl}:${basePort}/api/get_group`,{
-      headers: {
-        Authorization: `Bearer ${token}`, // Include the token in the headers
-      },
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('Authentication token is missing');
+  return { Authorization: `Bearer ${token}` };
+};
+
+// Fetch tribes (groups) from the API
+export const fetchTribes = async (): Promise<Tribe[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}:${API_PORT}/api/get_group`, {
+      headers: getAuthHeaders(),
     });
+
+    // Mapping the response data to return only the necessary 'name' for each tribe
     return response.data.map((item: { person_group: string }) => ({
       name: item.person_group,
     }));
   } catch (error) {
-    console.error('Error fetching groups:', error);
-    throw error; // Rethrow to handle errors in the component
+    console.error('Error fetching tribes:', error);
+    throw error;
   }
 };
 
+// Fetch daily attendance report
 export const fetchDailyReport = async (date: string, lateTime: string): Promise<Daily[]> => {
-  const baseUrl = "36.92.168.180";
-  const basePort = 7499;
   try {
-    const token = localStorage.getItem('token'); // Retrieve token from localStorage
-    if (!token) throw new Error('Authentication token is missing');
-
     const response = await axios.post(
-      `http://${baseUrl}:${basePort}/api/get_presence_report_json`,
+      `${API_BASE_URL}:${API_PORT}/api/get_presence_report_json`,
       { date, late_time: lateTime },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in headers
-        },
-      }
+      { headers: getAuthHeaders() }
     );
-
     return response.data as Daily[];
   } catch (error) {
     console.error('Error fetching daily report:', error);
+    throw error;
+  }
+};
+
+// Fetch accumulated presence data (resume report)
+export const fetchResumePresence = async (): Promise<Daily[]> => {
+  const baseUrl = "localhost";
+  const basePort = 3000;
+
+  try {
+    const response = await axios.get<Daily[]>(
+      `http://${baseUrl}:${basePort}/api/getAccumulatedData`,
+      { headers: getAuthHeaders() }
+    );
+
+    if (!response.data) throw new Error('No data received from the server');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error fetching daily report:', error.response?.data || error.message);
+    } else {
+      console.error('Unexpected error:', error.message);
+    }
     throw error;
   }
 };

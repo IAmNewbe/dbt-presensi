@@ -175,8 +175,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total, t
           <div className="flex w-full items-center">
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
             <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Presence </span>
-              <span> {present} </span>
+              <span> Presence : {present} </span>
             </p>
           </div>
         </div>
@@ -184,8 +183,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total, t
           <div className="flex w-full items-center">
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"></span>
             <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Late </span>
-              <span> {late} </span>
+              <span> Late : {late} </span>
             </p>
           </div>
         </div>
@@ -202,8 +200,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total, t
           <div className="flex w-full items-center">
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#ff8d21]"></span>
             <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-              <span> Absence </span>
-              <span> {absent} </span>
+              <span> Absence : {absent} </span>
             </p>
           </div>
         </div>

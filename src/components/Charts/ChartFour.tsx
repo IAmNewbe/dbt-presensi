@@ -108,20 +108,24 @@ const ChartFour: React.FC<ChartPeriodState> = ({ period }) => {
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h5 className="text-xl font-semibold text-black dark:text-white">
-            Attendance % by Tribe
+            Attendance by Tribe
           </h5>
         </div>
         <div>
           <div className="relative z-20 inline-block">
+          <label className="flex items-center gap-2">
+            <p className="flex font-semibold">Status:</p>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
+              className="ml-1  bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b"
             >
               <option value="On Time">Present</option>
               <option value="Absent">Absent</option>
               <option value="Late">Late</option>
             </select>
+          </label>
+
             <span className=" hidden absolute right-3 top-1/2 z-10 -translate-y-1/2">
               <svg
                 width="10"

@@ -21,6 +21,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
   );
 
+ const handleLogout = () => {
+    localStorage.removeItem('token'); // Clear the token
+    
+    navigate('/'); // Redirect to sign-in page
+    window.location.reload();
+  };
+
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -495,8 +502,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li> */}
               <li>
+
+
+                
                 <NavLink
-                  to="/chart"
+                  to="/"
+                  onClick={handleLogout}
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                     pathname.includes('chart') && 'bg-graydark dark:bg-meta-4'
                   }`}

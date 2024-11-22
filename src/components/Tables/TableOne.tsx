@@ -108,74 +108,70 @@ const TableOne = () => {
   };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 lg:min-h-[636px]">
-      
-      <section className=''>
-        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
-          Attendance Details Today
-        </h4>
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 lg:min-h-[636px] flex flex-col justify-between">
+  <section>
+    <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
+      Attendance Details Today
+    </h4>
 
-        <div className='flex gap-3 mb-2'>
-          <label className='flex gap-2'>
-            <p className='font-semibold'>Status:</p>
-            <select className='ml-1  bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b' value={statusFilter} onChange={handleStatusChange}>
-              <option value="All">All</option>
-              <option value="On Time">Present</option>
-              <option value="Absent">Absent</option>
-              <option value="Late">Late</option>
-            </select>
-          </label>
+    <div className="flex gap-3 mb-2">
+      <label className="flex gap-2">
+        <p className="font-semibold">Status:</p>
+        <select
+          className="ml-1 bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b"
+          value={statusFilter}
+          onChange={handleStatusChange}
+        >
+          <option value="All">All</option>
+          <option value="On Time">Present</option>
+          <option value="Absent">Absent</option>
+          <option value="Late">Late</option>
+        </select>
+      </label>
 
-          <label className='flex gap-2'>
-            <p className='font-semibold'>Tribe:</p>
-            <select 
-                id="tribe-select"
-                value={selectedTribe}
-                onChange={handleTribeChange}
-                className=' bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
-                <option value="All">All</option>
-                {tribes.map((item) => (
-                  <option key={item.name} value={item.name}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-          </label>
-        </div>
-      </section>
-      
-      
-      <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase">
-              Name
-            </h5>
-          </div>
-          <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase">
-              Tribe
-            </h5>
-          </div>
-          <div className="p-2.5 text-center xl:p-5">
-            <h5 className="text-sm font-medium uppercase">
-              Status
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:py-5">
-            <h5 className="text-sm font-medium uppercase">
-              Check in Time
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase">
-              Office
-            </h5>
-          </div>
-        </div>
+      <label className="flex gap-2">
+        <p className="font-semibold">Tribe:</p>
+        <select
+          id="tribe-select"
+          value={selectedTribe}
+          onChange={handleTribeChange}
+          className="bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b"
+        >
+          <option value="All">All</option>
+          {tribes.map((item) => (
+            <option key={item.name} value={item.name}>
+              {item.name}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  </section>
 
-        {currentData.map((brand, key) => (
-          <div 
+  <div className="flex flex-col flex-grow mt-6">
+    {/* Header Tabel */}
+    <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
+      <div className="p-2.5 xl:p-5">
+        <h5 className="text-sm font-medium uppercase">Name</h5>
+      </div>
+      <div className="p-2.5 text-center xl:p-5">
+        <h5 className="text-sm font-medium uppercase">Tribe</h5>
+      </div>
+      <div className="p-2.5 text-center xl:p-5">
+        <h5 className="text-sm font-medium uppercase">Status</h5>
+      </div>
+      <div className="hidden p-2.5 text-center sm:block xl:py-5">
+        <h5 className="text-sm font-medium uppercase">Check in Time</h5>
+      </div>
+      <div className="hidden p-2.5 text-center sm:block xl:p-5">
+        <h5 className="text-sm font-medium uppercase">Office</h5>
+      </div>
+    </div>
+
+    {/* Data atau Baris Kosong */}
+    {currentData.length > 0
+      ? currentData.map((brand, key) => (
+          <div
             className={`grid grid-cols-3 sm:grid-cols-5 ${
               key === dailyData.length - 1
                 ? ''
@@ -183,55 +179,79 @@ const TableOne = () => {
             }`}
             key={key}
           >
-            
             <div className="flex items-center gap-3 p-2.5 text-sm">
-              {/* <div className="flex-shrink-0">
-                <img src={BrandOne} alt="Brand" />
-              </div> */}
               <p className="hidden text-black dark:text-white sm:block">
                 {brand.person_name}
               </p>
             </div>
 
             <div className="flex items-center justify-start p-2.5 text-sm">
-              <p className="text-black dark:text-white">{brand.person_group}</p>
+              <p className="text-black dark:text-white">
+                {brand.person_group}
+              </p>
             </div>
 
             <div className="flex items-center justify-center p-2.5 text-sm">
-              <p 
+              <p
                 className={`text-black ${
-                  brand.status === 'On Time' 
-                    ? 'text-green-600' 
-                    : brand.status === 'Absent' 
-                    ? 'text-red-500' 
-                    : brand.status == 'Late'
+                  brand.status === 'On Time'
+                    ? 'text-green-600'
+                    : brand.status === 'Absent'
+                    ? 'text-red-500'
+                    : brand.status === 'Late'
                     ? 'text-blueeazy'
                     : ''
                 }`}
-                >{brand.status}</p>
+              >
+                {brand.status}
+              </p>
             </div>
 
             <div className="hidden items-center justify-center p-2.5 sm:flex text-sm">
-              <p className="text-black dark:text-white">{brand.first_access_time}</p>
+              <p className="text-black dark:text-white">
+                {brand.first_access_time}
+              </p>
             </div>
 
             <div className="hidden items-center justify-center p-2.5 sm:flex text-sm">
               <p className="text-meta-5">{brand.resource_name}</p>
             </div>
           </div>
+        ))
+      : Array.from({ length: rowsPerPage }).map((_, idx) => (
+          <div
+            key={idx}
+            className="grid grid-cols-3 sm:grid-cols-5 border-b border-stroke dark:border-strokedark"
+          >
+            <div className="p-2.5 text-sm text-gray-400 dark:text-gray-500">
+              No Data
+            </div>
+            <div className="p-2.5 text-sm text-gray-400 dark:text-gray-500">
+              -
+            </div>
+            <div className="p-2.5 text-sm text-gray-400 dark:text-gray-500">
+              -
+            </div>
+            <div className="hidden p-2.5 text-sm text-gray-400 dark:text-gray-500 sm:block">
+              -
+            </div>
+            <div className="hidden p-2.5 text-sm text-gray-400 dark:text-gray-500 sm:block">
+              -
+            </div>
+          </div>
         ))}
-      </div>
+  </div>
 
-      <div className='h-full flex justify-end mb-0'>
-        <Paginnation 
-          currentPage={currentPage}
-          totalPages={totalPages}
-          // onPrevious={handlePrevious}
-          // onNext={handleNext}
-          onPageSelect={handlePageSelect}
-        />
-      </div>
-    </div>
+  {/* Pagination */}
+  <div className="flex justify-end mt-2 mb-5">
+    <Paginnation
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageSelect={handlePageSelect}
+    />
+  </div>
+</div>
+
   );
 };
 
