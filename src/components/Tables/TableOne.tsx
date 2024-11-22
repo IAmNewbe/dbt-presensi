@@ -34,6 +34,7 @@ const TableOne = () => {
   const rowsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [dailyData, setDailyData] = useState<Daily[]>([]);
+  const [selectedTribe, setSelectedTribe] = useState<string>('All');
   const [tribes, setTribes] = useState<Tribe[]>([]);
   const [personGroupFilter, setPersonGroupFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
@@ -43,11 +44,18 @@ const TableOne = () => {
     setStatusFilter(event.target.value);
   };
 
+  const handleTribeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = event.target.value;
+    setSelectedTribe(selectedValue);
+
+    // Filter based on both tribe and report status
+    
+  };
+
   const filteredData = employeeData.filter((employee) => {
-    if (statusFilter === 'All') {
-      return true; // Show all employees
-    }
-    return employee.status === statusFilter;
+    const tribeMatch = selectedTribe === 'All' || employee.person_group === selectedTribe;
+    const statusMatch = statusFilter === 'All' || employee.status === statusFilter;
+    return tribeMatch && statusMatch; // Both filters must match
   });
 
   useEffect(() => {
@@ -103,19 +111,35 @@ const TableOne = () => {
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 lg:min-h-[636px]">
       
       <section className=''>
-        <h4 className="mb-3 text-xl font-semibold text-black dark:text-white">
+        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
           Attendance Details Today
         </h4>
 
         <div className='flex gap-3 mb-2'>
-          <label className='float-right'>
-            Status:
-            <select className='ml-1 p-2 bg-bodydark1' value={statusFilter} onChange={handleStatusChange}>
+          <label className='flex gap-2'>
+            <p className='font-semibold'>Status:</p>
+            <select className='ml-1  bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b' value={statusFilter} onChange={handleStatusChange}>
               <option value="All">All</option>
               <option value="On Time">Present</option>
               <option value="Absent">Absent</option>
               <option value="Late">Late</option>
             </select>
+          </label>
+
+          <label className='flex gap-2'>
+            <p className='font-semibold'>Tribe:</p>
+            <select 
+                id="tribe-select"
+                value={selectedTribe}
+                onChange={handleTribeChange}
+                className=' bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
+                <option value="All">All</option>
+                {tribes.map((item) => (
+                  <option key={item.name} value={item.name}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
           </label>
         </div>
       </section>
@@ -175,7 +199,7 @@ const TableOne = () => {
 
             <div className="flex items-center justify-center p-2.5 text-sm">
               <p 
-                className={`text-black dark:text-white ${
+                className={`text-black ${
                   brand.status === 'On Time' 
                     ? 'text-green-600' 
                     : brand.status === 'Absent' 

@@ -1,5 +1,5 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { fetchTribes, Tribe, Daily, fetchDailyReport } from '../../pages/Dashboard/Data';
 
@@ -13,7 +13,7 @@ const options: ApexOptions = {
     type: 'area',
     height: 350,
   },
-  colors: ['#3C50E0', '#6577F3', '#0FADCF', '#ff8d21'],
+  colors: ['#3C50E0', '#2684ff', '#ff8d21'],
   // stroke: {
   //   curve: 'smooth',
   // },
@@ -23,17 +23,17 @@ const options: ApexOptions = {
   xaxis: {
     type: 'datetime',
     categories: [
-      '2018-09-19T00:00:00.000Z',
-      '2018-09-19T01:30:00.000Z',
-      '2018-09-19T02:30:00.000Z',
-      '2018-09-19T03:30:00.000Z',
-      '2018-09-19T04:30:00.000Z',
-      '2018-09-19T05:30:00.000Z',
-      '2018-09-19T06:30:00.000Z',
+      '2018-09-19T06:00:00.000Z',
       '2018-09-19T07:30:00.000Z',
       '2018-09-19T08:30:00.000Z',
       '2018-09-19T09:30:00.000Z',
       '2018-09-19T10:30:00.000Z',
+      '2018-09-19T11:30:00.000Z',
+      '2018-09-19T12:30:00.000Z',
+      '2018-09-19T13:30:00.000Z',
+      '2018-09-19T14:30:00.000Z',
+      '2018-09-19T15:30:00.000Z',
+      '2018-09-19T16:30:00.000Z',
     ],
   },
   tooltip: {
@@ -43,49 +43,69 @@ const options: ApexOptions = {
   },
 };
 
-const ChartSum: React.FC = () => {
+interface ChartPeriodState {
+  period: string;
+  tribe: string;
+}
+
+const ChartSum: React.FC<ChartPeriodState> = ({ period, tribe }) => {
+  const [dailyData, setDailyData] = useState<Daily[]>([]);
+  const [key, setKey] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<string>('On Time');
   const [state, setState] = useState<ChartAreaState>({
     series: [
-      {
-        name: 'Presence',
-        data: [31, 40, 28, 51, 42, 109, 100,40, 28, 51, 23],
-      },
-      {
-        name: 'Late',
-        data: [11, 32, 45, 32, 34, 52, 41, 32, 45, 32, 12],
-      },
-      {
-        name: 'Leave',
-        data: [15, 22, 15, 52, 24, 12, 21, 22, 15, 52, 3],
-      },
-      {
-        name: 'Absence',
-        data: [1, 3, 5, 12, 14, 2, 24, 3, 5, 12, 20],
-      },
+      { name: 'Presence', data: [] },
+      { name: 'Late', data: [] },
+      { name: 'Absence', data: [] },
     ],
   });
 
+  useEffect(() => {
+    if (period === "Daily") {
+      const fetchDailyData = async () => {
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        const late = "09:00";
+        const data = await fetchDailyReport(formattedDate, late);
+        setDailyData(data);
+      };
+      fetchDailyData();
+    }
+  }, [period]);
+
+  useEffect(() => {
+    // Filter data for the selected group
+    const groupData = dailyData.find((d) => d.group === tribe);
+
+    if (groupData) {
+      // Aggregate status counts
+      const statusCounts = {
+        Presence: 0,
+        Late: 0,
+        Absence: 0,
+      };
+
+      groupData.data.forEach((entry) => {
+        if (entry.status === 'On Time') statusCounts.Presence++;
+        if (entry.status === 'Late') statusCounts.Late++;
+        if (entry.status === 'Absent') statusCounts.Absence++;
+      });
+
+      // Update the chart series
+      setState({
+        series: [
+          { name: 'On Time', data: [statusCounts.Presence] },
+          { name: 'Late', data: [statusCounts.Late] },
+          { name: 'Absence', data: [statusCounts.Absence] },
+        ],
+      });
+
+      console.log(statusCounts.Presence);
+    }
+  }, [dailyData, tribe]);
+
   const handleReset = () => {
-    setState({
-      series: [
-        {
-          name: 'Presence',
-          data: [31, 40, 28, 51, 42, 109, 100,40, 28, 51, 23],
-        },
-        {
-          name: 'Late',
-          data: [11, 32, 45, 32, 34, 52, 41, 32, 45, 32, 12],
-        },
-        {
-          name: 'Leave',
-          data: [15, 22, 15, 52, 24, 12, 21, 22, 15, 52, 3],
-        },
-        {
-          name: 'Absence',
-          data: [1, 3, 5, 12, 14, 2, 24, 3, 5, 12, 20],
-        },
-      ],
-    });
+    setKey((prevKey) => prevKey + 1);
   };
 
   return (
@@ -106,8 +126,8 @@ const ChartSum: React.FC = () => {
         </div>
       </div>
 
-      <div className="mb-2">
-        <div id="chartArea" className="mx-auto">
+      <div className="mb-2" >
+        <div id="chartArea" key={key} className="mx-auto">
           <ReactApexChart
             options={options}
             series={state.series}
