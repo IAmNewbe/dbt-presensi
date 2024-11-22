@@ -6,6 +6,7 @@ import BrandFour from '../../images/brand/brand-04.svg';
 import BrandFive from '../../images/brand/brand-05.svg';
 import { fetchTribes, Tribe, Daily, fetchDailyReport } from '../../pages/Dashboard/Data';
 import React, { useState, useEffect } from 'react';
+import Paginnation from '../../pages/UiElements/Pagination';
 
 interface Employee {
   employee_id: string;
@@ -23,7 +24,15 @@ interface Group {
   data: Employee[];
 }
 
+interface Data {
+  id: number;
+  name: string;
+  status: string;
+}
+
 const TableOne = () => {
+  const rowsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
   const [dailyData, setDailyData] = useState<Daily[]>([]);
   const [tribes, setTribes] = useState<Tribe[]>([]);
   const [personGroupFilter, setPersonGroupFilter] = useState<string>('');
@@ -72,8 +81,27 @@ const TableOne = () => {
     fetchDailyData();
   }, [dailyData]);
 
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentData = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+
+  const handlePrevious = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePageSelect = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1 lg:min-h-[636px]">
+      
       <section className=''>
         <h4 className="mb-3 text-xl font-semibold text-black dark:text-white">
           Attendance Details Today
@@ -122,7 +150,7 @@ const TableOne = () => {
           </div>
         </div>
 
-        {filteredData.map((brand, key) => (
+        {currentData.map((brand, key) => (
           <div 
             className={`grid grid-cols-3 sm:grid-cols-5 ${
               key === dailyData.length - 1
@@ -152,8 +180,8 @@ const TableOne = () => {
                     ? 'text-green-600' 
                     : brand.status === 'Absent' 
                     ? 'text-red-500' 
-                    : brand.status === 'Late'
-                    ? 'text-[#6577F3]'
+                    : brand.status == 'Late'
+                    ? 'text-blueeazy'
                     : ''
                 }`}
                 >{brand.status}</p>
@@ -168,6 +196,16 @@ const TableOne = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className='h-full flex justify-end mb-0'>
+        <Paginnation 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          // onPrevious={handlePrevious}
+          // onNext={handleNext}
+          onPageSelect={handlePageSelect}
+        />
       </div>
     </div>
   );

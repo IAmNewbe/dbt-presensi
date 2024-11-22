@@ -46,7 +46,7 @@ const ECommerce: React.FC = () => {
       try {
         const data = await fetchTribes(); // Fetch tribes using the service
         setTribes(data);
-        setCardData(data);
+        // setCardData(data);
       } catch (err) {
         console.error('Error fetching tribes:', err);
         setError('Failed to fetch tribes');
@@ -110,17 +110,17 @@ const ECommerce: React.FC = () => {
   };
 
   const setCardData = (data: any[]) => {
-    const presentCount = countPresenceEmployees(data);
-    const absentCount = countAbsentEmployees(data);
-    const lateCount = countLateEmployees(data);
-    setPresentCount(presentCount);
-    setAbsentCount(absentCount);
-    setLateCount(lateCount);
-    setTotalEmployee(presentCount+absentCount+lateCount);
+    const presentCounter = countPresenceEmployees(data);
+    const absentCounter = countAbsentEmployees(data);
+    const lateCounter = countLateEmployees(data);
+    setPresentCount(presentCounter);
+    setAbsentCount(absentCounter);
+    setLateCount(lateCounter);
+    setTotalEmployee(presentCounter+absentCounter+lateCounter);
+    console.log(presentCount)
   }
 
   useEffect(() => {
-    // Whenever the data array changes, update the counts
     setCardData(data);
   }, [data]);
 
@@ -249,7 +249,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Employee Total" total={String(totalEmployee)} >
+        <CardDataStats title="Employee Total" total={String(totalEmployee)} rate=''>
           <svg
             className="fill-blueeazy dark:fill-white"
             width="22"
@@ -283,13 +283,12 @@ const ECommerce: React.FC = () => {
           late={lateCount}
           absent={absentCount}
           total={totalEmployee}
+          tribe={selectedTribe}
           />
         <ChartFour 
-          present={presentCount}
-          late={lateCount}
-          absent={absentCount}
-          total={totalEmployee}
-          />
+          period='Daily'
+        />
+
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>

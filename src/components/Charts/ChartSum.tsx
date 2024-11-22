@@ -1,6 +1,7 @@
 import { ApexOptions } from 'apexcharts';
 import React, { useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import { fetchTribes, Tribe, Daily, fetchDailyReport } from '../../pages/Dashboard/Data';
 
 interface ChartAreaState {
   series: { name: string; data: number[] }[];
@@ -13,9 +14,9 @@ const options: ApexOptions = {
     height: 350,
   },
   colors: ['#3C50E0', '#6577F3', '#0FADCF', '#ff8d21'],
-  stroke: {
-    curve: 'smooth',
-  },
+  // stroke: {
+  //   curve: 'smooth',
+  // },
   dataLabels: {
     enabled: false,
   },

@@ -1,5 +1,5 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 interface ChartThreeState {
@@ -11,6 +11,7 @@ interface ChartThreeProps {
   late: number;
   absent: number;
   total: number;
+  tribe: string;
 }
 
 const options: ApexOptions = {
@@ -28,13 +29,45 @@ const options: ApexOptions = {
   plotOptions: {
     pie: {
       donut: {
-        size: '65%',
+        size: '55%',
         background: 'transparent',
+        labels: {
+          show: true,
+        }
       },
     },
   },
   dataLabels: {
-    enabled: false,
+    enabled: true,
+    style: {
+      fontSize: '14px',
+      colors: ['#ffffff', '#ffffff','#ffffff','#ffffff']
+    },
+    background: {
+      enabled: true,
+      foreColor: '#fff',
+      padding: 4,
+      borderRadius: 2,
+      borderWidth: 1,
+      borderColor: '#fff',
+      opacity: 0.9,
+      dropShadow: {
+        enabled: false,
+        top: 1,
+        left: 1,
+        blur: 1,
+        color: '#ffffff',
+        opacity: 0.45
+      }
+    },
+    dropShadow: {
+      enabled: false,
+      top: 1,
+      left: 1,
+      blur: 1,
+      color: '#ffffff',
+      opacity: 0.45
+    },
   },
   responsive: [
     {
@@ -56,7 +89,7 @@ const options: ApexOptions = {
   ],
 };
 
-const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total}) => {
+const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total, tribe}) => {
   // const [total, setTotal] = useState(0);
   const [state, setState] = useState<ChartThreeState>({
     series: [present, late, absent],
@@ -69,6 +102,13 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total}) 
     }));
   };
   handleReset;
+
+  useEffect(() => {
+    setState({
+      series: [present, late, absent],
+    });
+  }, [present, late, absent]);
+
   console.log(state.series)
 
   return (
@@ -76,7 +116,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total}) 
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h5 className="text-xl font-semibold text-black dark:text-white">
-            Attendace Analytics by Time
+            {tribe} Attendance
           </h5>
         </div>
         <div>
@@ -136,7 +176,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total}) 
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
             <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
               <span> Presence </span>
-              <span> {(present*100/total).toFixed(2)}.% </span>
+              <span> {present} </span>
             </p>
           </div>
         </div>
@@ -145,7 +185,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total}) 
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#6577F3]"></span>
             <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
               <span> Late </span>
-              <span> {(late*100/total).toFixed(2)}% </span>
+              <span> {late} </span>
             </p>
           </div>
         </div>
@@ -163,7 +203,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total}) 
             <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-[#ff8d21]"></span>
             <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
               <span> Absence </span>
-              <span> {(absent*100/total).toFixed(2)}% </span>
+              <span> {absent} </span>
             </p>
           </div>
         </div>

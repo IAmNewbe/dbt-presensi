@@ -1,9 +1,11 @@
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import { fetchTribes, Tribe, Daily, fetchDailyReport } from '../../pages/Dashboard/Data';
 
-interface ChartAreaState {
-  name: string; data: number[];
+interface ChartThreeState {
+  series: number[];
+  labels: string[];
 }
 
 const options: ApexOptions = {
@@ -44,8 +46,8 @@ const options: ApexOptions = {
       opacity: 0.45
     }
   },
-  colors: ['#3C50E0', '#6577F3', '#ff8d21'],
-  labels: ['Presence', 'Late', 'Absence'],
+  colors: ['#6574CD','#9561E2','#F6993F','#38C172','#E3342F', '#FFED4A', '#2684FF','#F66D9B','#4DC0B5'],
+  // labels: ['1','2','3','4','5','6','7','8','9'],
   responsive: [
     {
       breakpoint: 640,
@@ -55,55 +57,71 @@ const options: ApexOptions = {
         },
         legend: {
           position: 'bottom',
+          horizontalAlign: "left",
         },
       },
     },
   ],
 }
 
-interface ChartThreeProps {
-  present: number;
-  late: number;
-  absent: number;
-  total: number;
+interface ChartPeriodState {
+  period: string;
 }
 
-interface ChartThreeState {
-  series: number[];
-}
-
-const ChartFour: React.FC<ChartThreeProps> = ({ present, late, absent, total}) => {
+const ChartFour: React.FC<ChartPeriodState> = ({ period }) => {
+  const [dailyData, setDailyData] = useState<Daily[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>('On Time');
   const [state, setState] = useState<ChartThreeState>({
-    series: [present, late, absent],
+    series: [],
+    labels: [],
   });
 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-      series: [present, late, absent],
-    }));
-  };
+  useEffect(() => {
+    if (period === "Daily") {
+      const fetchDailyData = async () => {
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        const late = "09:00";
+        const data = await fetchDailyReport(formattedDate, late);
+        setDailyData(data);
+      };
+      fetchDailyData();
+    }
+  }, [period]);
+
+  useEffect(() => {
+    const filteredData = dailyData.map((group) => {
+      const count = group.data.filter(
+        (item) => item.status.toLowerCase() === statusFilter.toLowerCase()
+      ).length;
+      return { group: group.group, count };
+    });
+
+    setState({
+      series: filteredData.map((item) => item.count),
+      labels: filteredData.map((item) => item.group),
+    });
+  }, [dailyData, statusFilter]);
 
   return (
     <div className="sm:px-7.5 col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-7">
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h5 className="text-xl font-semibold text-black dark:text-white">
-            Attendace Analytics by Division
+            Attendance % by Tribe
           </h5>
         </div>
         <div>
           <div className="relative z-20 inline-block">
-            {/* <select
-            onChange={handleSelectChange}
-            className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
             >
-              {seriesData.map((series) => (
-                <option key={series.name} value={series.name}>
-                  {series.name}
-                </option>
-              ))}
-            </select> */}
+              <option value="On Time">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Late">Late</option>
+            </select>
             <span className=" hidden absolute right-3 top-1/2 z-10 -translate-y-1/2">
               <svg
                 width="10"
@@ -128,10 +146,74 @@ const ChartFour: React.FC<ChartThreeProps> = ({ present, late, absent, total}) =
         </div>
       </div>
 
-      <div className="">
+      <div className="bg-ye">
         <div id="chartThree" className="mx-auto flex justify-center">
           <ReactApexChart
-            options={options}
+           options={{
+            labels: state.labels,
+            legend: {
+              position: "bottom",
+              horizontalAlign: "left",
+              // floating: true,
+            },
+            colors: [
+              '#3C50E0', // Blue
+              '#6577F3', // Light Blue
+              '#facc15', // antares
+              '#22C55E', // Green
+              '#2684ff', // eazy
+              '#FF8D21', // Yellow
+              '#8B5CF6', // Purple
+              '#EC4899', // Pink
+              '#14B8A6'  // Teal
+            ],
+            dataLabels: {
+              enabled: true,
+              style: {
+                fontSize: '14px',
+                colors: ['#ffffff', '#ffffff','#ffffff','#ffffff']
+              },
+              background: {
+                enabled: true,
+                foreColor: '#fff',
+                padding: 4,
+                borderRadius: 2,
+                borderWidth: 1,
+                borderColor: '#fff',
+                opacity: 0.9,
+                dropShadow: {
+                  enabled: false,
+                  top: 1,
+                  left: 1,
+                  blur: 1,
+                  color: '#ffffff',
+                  opacity: 0.45
+                }
+              },
+              dropShadow: {
+                enabled: false,
+                top: 1,
+                left: 1,
+                blur: 1,
+                color: '#ffffff',
+                opacity: 0.45
+              }
+            },
+            responsive: [
+              {
+                breakpoint: 640,
+                options: {
+                  chart: {
+                    width: 360,
+                  },
+                  legend: {
+                    position: 'bottom',
+                    horizontalAlign: "left",
+                  },
+                },
+              },
+            ]
+            }}
             series={state.series}
             type="pie"
             width={480}
