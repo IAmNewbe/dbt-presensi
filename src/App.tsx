@@ -25,6 +25,9 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    if (token === undefined) {
+        window.location.reload();
+    }
     console.log(token);
     setIsAuthenticated(!!token); // Convert token to boolean
     setLoading(false); // Stop loading after checking

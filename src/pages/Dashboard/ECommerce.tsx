@@ -49,12 +49,11 @@ const ECommerce: React.FC = () => {
         // setCardData(data);
       } catch (err) {
         console.error('Error fetching tribes:', err);
-        setError('Failed to fetch tribes');
-        // if (err.response?.status === 401) {
-        //   console.error('Unauthorized. Redirecting to login.');
-        //   // Redirect to sign-in page
-        //   window.location.href = '/';
-        // }
+        
+        if (err == "Authentication token is missing") {
+          setError("Token expired");
+          console.log("mampu")
+        }
       } finally {
         setLoading(false);
       }
@@ -146,15 +145,15 @@ const ECommerce: React.FC = () => {
   return (
     <>
       <div className='mb-4 font-satoshi'>
-        <section className='flex justify-between items-center gap-4'>
-          <div className='flex gap-4'>
+        <section className='lg:flex justify-between items-center gap-4'>
+          <div className='lg:flex gap-4 my-2 lg:my-0'>
             <div className='flex items-center gap-4'>
               <h2 className='text-black-0 font-semibold'>Tribe:</h2>
               <select 
                 id="tribe-select"
                 value={selectedTribe}
                 onChange={handleTribeChange}
-                className='p-2 bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
+                className='p-2 bg-white text-black-0 max-w-64 md:max-w-full dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
                 <option value="All">All</option>
                 {tribes.map((item) => (
                   <option key={item.name} value={item.name}>

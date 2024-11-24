@@ -114,8 +114,8 @@ const TableOne = () => {
       Attendance Details Today
     </h4>
 
-    <div className="flex gap-3 mb-2">
-      <label className="flex gap-2">
+    <div className="md:flex gap-3 mb-2">
+      <label className="flex mb-1 md:mb-0 gap-2">
         <p className="font-semibold">Status:</p>
         <select
           className="ml-1 bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b"
@@ -129,13 +129,13 @@ const TableOne = () => {
         </select>
       </label>
 
-      <label className="flex gap-2">
+      <label className="flex mt-1 md:mt-0 gap-2">
         <p className="font-semibold">Tribe:</p>
         <select
           id="tribe-select"
           value={selectedTribe}
           onChange={handleTribeChange}
-          className="bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b"
+          className="bg-white text-black-0 max-w-60 md:max-w-full dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b"
         >
           <option value="All">All</option>
           {tribes.map((item) => (
@@ -180,7 +180,7 @@ const TableOne = () => {
             key={key}
           >
             <div className="flex items-center gap-3 p-2.5 text-sm">
-              <p className="hidden text-black dark:text-white sm:block">
+              <p className=" text-black dark:text-white sm:block">
                 {brand.person_name}
               </p>
             </div>

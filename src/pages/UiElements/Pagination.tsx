@@ -41,12 +41,12 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <nav aria-label="Pagination" className="flex items-center justify-center mt-4">
-      <ul className="inline-flex -space-x-px">
+      <ul className="inline-flex -space-x-px text-sm md:text-base">
         {/* Previous Button */}
         <li>
           <button
             onClick={() => onPageSelect(Math.max(currentPage - 1, 1))}
-            className="px-3 py-2 bg-white border border-blueeazy rounded-l-md text-blueeazy hover:bg-blueeazy hover:text-white disabled:opacity-50"
+            className="px-2 md:px-3 py-2 bg-white border border-blueeazy dark:bg-boxdark rounded-l-md text-blueeazy hover:bg-blueeazy hover:text-white disabled:opacity-50"
             disabled={currentPage === 1}
           >
             Previous
@@ -57,7 +57,7 @@ const Pagination: React.FC<PaginationProps> = ({
         {visiblePages.map((page, idx) =>
           page === -1 ? (
             // Render Ellipsis
-            <li key={idx} className="px-3 py-2 bg-white border border-blueeazy text-blueeazy">
+            <li key={idx} className="px-2 md:px-3 py-2 bg-white border dark:bg-boxdark border-blueeazy text-blueeazy">
               ...
             </li>
           ) : (
@@ -65,10 +65,10 @@ const Pagination: React.FC<PaginationProps> = ({
             <li key={idx}>
               <button
                 onClick={() => onPageSelect(page)}
-                className={`px-3 py-2 border border-blueeazy ${
+                className={`px-2 md:px-3 py-2 border border-blueeazy ${
                   currentPage === page
-                    ? "bg-blueeazy text-white"
-                    : "bg-white text-blueeazy hover:bg-blueeazy hover:text-white"
+                    ? "bg-blueeazy dark:bg-boxdark text-white"
+                    : "bg-white dark:bg-boxdark text-blueeazy hover:bg-blueeazy hover:text-white"
                 }`}
               >
                 {page}
@@ -81,7 +81,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <li>
           <button
             onClick={() => onPageSelect(Math.min(currentPage + 1, totalPages))}
-            className="px-3 py-2 bg-white border border-blueeazy rounded-r-md text-blueeazy hover:bg-blueeazy hover:text-white disabled:opacity-50"
+            className="px-2 md:px-3 py-2 bg-white border dark:bg-boxdark border-blueeazy rounded-r-md text-blueeazy hover:bg-blueeazy hover:text-white disabled:opacity-50"
             disabled={currentPage === totalPages}
           >
             Next
