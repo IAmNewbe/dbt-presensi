@@ -63,13 +63,26 @@ export const fetchDailyReport = async (date: string, lateTime: string): Promise<
 
 // Fetch accumulated presence data (resume report)
 export const fetchResumePresence = async (): Promise<Daily[]> => {
-  const baseUrl = "localhost";
-  const basePort = 3000;
+  const baseUrl = "36.92.168.180";
+  const basePort = 7499;
+
+  // Data body yang akan dikirimkan ke API
+  const requestData = {
+    start_date: "2024-11-1",
+    end_date: "2024-11-23",
+    late_time: "09:00",
+  };
 
   try {
-    const response = await axios.get<Daily[]>(
-      `http://${baseUrl}:${basePort}/api/getAccumulatedData`,
-      { headers: getAuthHeaders() }
+    const response = await axios.post<Daily[]>(
+      `http://${baseUrl}:${basePort}/api/getAccumulatedData`, 
+      requestData, // Body data dikirim sebagai JSON
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': getAuthHeaders()?.Authorization, // Ambil Authorization dari fungsi getAuthHeaders()
+        },
+      }
     );
 
     if (!response.data) throw new Error('No data received from the server');
@@ -83,3 +96,4 @@ export const fetchResumePresence = async (): Promise<Daily[]> => {
     throw error;
   }
 };
+
