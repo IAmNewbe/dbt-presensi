@@ -1,4 +1,5 @@
 import axios from 'axios';
+import SERVER from '../common/config';
 
 export type Person = [
   {
@@ -19,13 +20,13 @@ export type Person = [
 ]
 
 export const fetchAllReportByName = async (name: string): Promise<Person[]> => {
-  const baseUrl = '36.92.168.180';
-  const basePort = 7499;
+  const baseUrl = SERVER.baseURL;
+  const basePort = SERVER.basePORT;
   
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(
-      `http://${baseUrl}:${basePort}/api/get_presence_report_json_all_by_name`,
+      `${baseUrl}:${basePort}/api/get_presence_report_json_all_by_name`,
       {
         name: name,
         late_time: "09:00"

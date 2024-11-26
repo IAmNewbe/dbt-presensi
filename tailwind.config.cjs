@@ -3,7 +3,7 @@ const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}',"./node_modules/tailwind-datepicker-react/dist/**/*.js",],
   darkMode: 'class',
   theme: {
     fontFamily: {

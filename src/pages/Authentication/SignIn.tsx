@@ -5,9 +5,15 @@ import LogoDark from '/LogoAntaresEazy.png';
 import Logo from '../../images/logo/logo.svg';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import SERVER from '../../common/config';
+import ErrorAlert from '../UiElements/ErrorAlert';
+import { ToastContainer, toast } from 'react-toastify';
+
+const baseUrl = SERVER.baseURL;
+const basePort = SERVER.basePORT;
 
 const apiClient = axios.create({
-  baseURL: 'http://36.92.168.180:7499/api', // Replace with your backend base URL
+  baseURL: `${baseUrl}:${basePort}/api`, // Replace with your backend base URL
   headers: {
     'Content-Type': 'application/json',
   },
@@ -18,15 +24,13 @@ const SignIn: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
-  const baseUrl = "36.92.168.180";
-  const basePort = 7499;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const response = await apiClient.post('/auth/login', {
@@ -37,25 +41,29 @@ const SignIn: React.FC = () => {
       const token = response.data.token; // Assuming the token is in the response
       localStorage.setItem('token', token); // Save token to localStorage
       window.location.reload();
+      setError(false);
       navigate('/'); // Navigate to default route after login
       
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setErrorMessage(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(true);
+      toast.error(`Error: ${errorMessage}, please try again`, { position: toast.POSITION.TOP_CENTER });
+      console.log(error);
+      console.log(errorMessage);
     } finally {
       setLoading(false);
     }
   };
   return (
     <>
-     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark w-screen h-screen fixed top-0 left-0 z-50">
-  <div className="flex flex-wrap items-center h-full">
-    <div className="hidden w-full xl:block xl:w-1/2">
+      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark w-screen h-screen fixed top-0 left-0 z-50"> 
+        <div className="flex flex-wrap items-center h-full">
+        <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
                 <img className="hidden dark:block" src={Logo} alt="Logo" />
                 <img className="dark:hidden" src={LogoDark} alt="Logo" />
               </Link>
-
               <p className="2xl:px-20">
               A single experience that supports the entire attendance dashboard system for your organization and business..
               </p>
@@ -184,7 +192,7 @@ const SignIn: React.FC = () => {
               </span>
             </div>
           </div>
-
+          
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
@@ -224,7 +232,6 @@ const SignIn: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Password
@@ -274,6 +281,7 @@ const SignIn: React.FC = () => {
             </div>
           </div>
         </div>
+      <ToastContainer />
       </div>
     </>
   );

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import SERVER from '../../common/config';
 
 // Define the Tribe interface
 export interface Tribe {
@@ -20,8 +21,8 @@ export interface Daily {
 }
 
 // Common base URL configuration for API
-const API_BASE_URL = "http://36.92.168.180";
-const API_PORT = 7499;
+const API_BASE_URL = SERVER.baseURL;
+const API_PORT = SERVER.basePORT;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -63,12 +64,10 @@ export const fetchDailyReport = async (date: string, lateTime: string): Promise<
 
 // Fetch accumulated presence data (resume report)
 export const fetchResumePresence = async (): Promise<Daily[]> => {
-  const baseUrl = "localhost";
-  const basePort = 3000;
 
   try {
     const response = await axios.get<Daily[]>(
-      `http://${baseUrl}:${basePort}/api/getAccumulatedData`,
+      `${API_BASE_URL}:${API_PORT}/api/getAccumulatedData`,
       { headers: getAuthHeaders() }
     );
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import SERVER from '../common/config';
 
 export type AllDaily = [
   {
@@ -24,13 +25,13 @@ export type AllDaily = [
 ]
 
 export const fetchAllDailyDate = async (): Promise<AllDaily[]> => {
-  const baseUrl = '36.92.168.180';
-  const basePort = 7499;
+  const baseUrl = SERVER.baseURL;
+  const basePort = SERVER.basePORT;
   
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(
-      `http://${baseUrl}:${basePort}/api/get_presence_report_json_all`,
+      `${baseUrl}:${basePort}/api/get_presence_report_json_all`,
       {
         late_time: "09:00"
       },

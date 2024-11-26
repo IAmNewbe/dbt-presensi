@@ -110,8 +110,6 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total, t
     });
   }, [present, late, absent]);
 
-  console.log(state.series)
-
   return (
     <div className="sm:px-7.5 col-span-12 rounded-sm bg-white px-5 pb-5 pt-2 dark:border-strokedark dark:bg-boxdark xl:col-span-5">
       <div className="mb-3 justify-between gap-4">

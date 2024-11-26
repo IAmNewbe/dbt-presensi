@@ -1,4 +1,5 @@
 import axios from 'axios';
+import SERVER from '../common/config';
 
 export type Log = {
   id: number,
@@ -13,15 +14,15 @@ export type Log = {
 };
 
 export const fetchLogData = async (): Promise<Log[]> => {
-  const baseUrl = '36.92.168.180';
-  const basePort = 7499;
+  const baseUrl = SERVER.baseURL;
+  const basePort = SERVER.basePORT;
   
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0];
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(
-      `http://${baseUrl}:${basePort}/api/get_last_data`,
+      `${baseUrl}:${basePort}/api/get_last_data`,
       {
         limit: '5',
         date: formattedDate

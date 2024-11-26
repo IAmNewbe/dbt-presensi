@@ -3,79 +3,120 @@ import ChartOne from '../../components/Charts/ChartOne';
 import ChartThree from '../../components/Charts/ChartThree';
 import ChartTwo from '../../components/Charts/ChartTwo';
 import ChatCard from '../../components/Chat/ChatCard';
-import MapOne from '../../components/Maps/MapOne';
 import TableOne from '../../components/Tables/TableOne';
 import ChartSum from '../../components/Charts/ChartSum';
 import ChartFour from '../../components/Charts/ChartFour';
 import { fetchTribes, Tribe, Daily, fetchDailyReport } from './Data';
 import React, { useState, useEffect } from 'react';
 import DownloadButton from '../../components/Buttons/downloadButton';
+import { toast, ToastContainer } from 'react-toastify';
+import Datepicker from "tailwind-datepicker-react";
+import { setData } from './Filters';
+
+const options = {
+	title: "Select date",
+	autoHide: true,
+	todayBtn: true,
+	clearBtn: true,
+	clearBtnText: "Clear",
+	maxDate: new Date("2030-01-01"),
+	minDate: new Date("1950-01-01"),
+	theme: {
+		background: "bg-white dark:bg-gray-800",
+		todayBtn: "",
+		clearBtn: "",
+		icons: "",
+		text: "",
+		disabledText: "#d3d3d3", // Add this property
+    // selectedts: "#ffeb3b",
+		input: "",
+		inputIcon: "",
+		selected: "",
+	},
+	// icons: {
+	// 	// // () => ReactElement | JSX.Element
+	// 	// prev: () => <span>Prev</span>,
+	// 	// next: () => <span>Next</span>,
+	// },
+	datepickerClassNames: "top-20",
+	// defaultDate: new Date(),
+	language: "en",
+	disabledDates: [],
+	weekDays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+	inputNameProp: "date",
+	inputIdProp: "date",
+	inputPlaceholderProp: "Select Date",
+	inputDateFormatProp: {
+		day: "numeric",
+		month: "long",
+		year: "numeric"
+	}
+}
 
 const ECommerce: React.FC = () => {
   const [tribes, setTribes] = useState<Tribe[]>([]);
   const [dailyData, setDailyData] = useState<Daily[]>([]); // All Daily data
   const [filteredData, setFilteredData] = useState<Daily[]>([]); // Filtered data for display
   const [selectedTribe, setSelectedTribe] = useState<string>('All');
-  const [selectedReport, setSelectedReport] = useState<string>('Daily');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [absentCount, setAbsentCount] = useState(0);
   const [presentCount, setPresentCount] = useState(0);
   const [lateCount, setLateCount] = useState(0);
   const [totalEmployee, setTotalEmployee] = useState(0);
-  const [data, setData] = useState<any[]>([]);
+  const token = localStorage.getItem('token');
+  const [show, setShow] = useState<boolean >(false);
+  const today = new Date().toISOString().split('T')[0];
+  const [date, setDate] = useState(today);
+  
+	const handleChange = (selectedDate: Date) => {
+    const formattedDate = selectedDate.toLocaleDateString('en-CA');
+    setDate(formattedDate);
+    setData(selectedTribe, formattedDate);
+    filterData(selectedTribe, formattedDate);
+	}
+
+	const handleClose = (state: boolean) => {
+		setShow(state)
+	}
+
+  useEffect(() => {
+    if (!token) {
+      toast.error(`Session time out, please log in again`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
+    }
+  }, [token]);
  
   useEffect(() => {
-    // Simulate fetching Daily data
     const fetchDailyData = async () => {
-      const today = new Date();
-      const formattedDate = today.toISOString().split('T')[0];
       const late = "09:00";
-      const data = await fetchDailyReport(formattedDate, late);
+      const data = await fetchDailyReport(date, late);
       setDailyData(data);
-      // console.log(data);
-      setFilteredData(data);
-      setCardData(data); // Initialize with all data
     };
 
     fetchDailyData();
-  }, [data]);
+  }, [date]);
 
   useEffect(() => {
     const getTribes = async () => {
       try {
         const data = await fetchTribes(); // Fetch tribes using the service
         setTribes(data);
-        // setCardData(data);
       } catch (err) {
-        console.error('Error fetching tribes:', err);
-        
-        if (err == "Authentication token is missing") {
-          setError("Token expired");
-          console.log("mampu")
-        }
+        toast.error(`${err}, please log in again`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
     getTribes();
-  }, [data]);
+  }, []);
 
   const handleTribeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
     setSelectedTribe(selectedValue);
-
-    // Filter based on both tribe and report period
-    filterData(selectedValue, selectedReport);
-  };
-
-  const handleReportChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedReportValue = event.target.value;
-    setSelectedReport(selectedReportValue);
-
-    // Filter based on both tribe and report period
-    filterData(selectedTribe, selectedReportValue);
+    filterData(selectedValue, date);
+    setData(selectedValue, date);
   };
 
   const countAbsentEmployees = (data: any[]) => {
@@ -116,31 +157,25 @@ const ECommerce: React.FC = () => {
     setAbsentCount(absentCounter);
     setLateCount(lateCounter);
     setTotalEmployee(presentCounter+absentCounter+lateCounter);
-    console.log(presentCount)
   }
-
-  useEffect(() => {
-    setCardData(data);
-  }, [data]);
 
   const filterData = (tribe: string, report: string) => {
     // First filter by tribe
     let filteredByTribe = tribe === 'All' ? dailyData : dailyData.filter((daily) => daily.group === tribe);
-
-    // Then filter by report type (you can extend this logic as needed for Weekly/Monthly)
-    if (report === 'Daily') {
-      setFilteredData(filteredByTribe);
-      const absentCount = countAbsentEmployees(filteredByTribe); 
-      setCardData(filteredByTribe);
-      console.log("absent:", absentCount);
-      console.log(filteredByTribe);
-    } else {
-      // Extend with logic for Weekly and Monthly if available
-      console.log(`${report} report selected`);
-      setFilteredData(filteredByTribe); // Placeholder for Weekly/Monthly logic
-      console.log(filterData)
-    }
+    setFilteredData(filteredByTribe);
+    setCardData(filteredByTribe);
+    
   };
+  useEffect(() => {
+    if (dailyData.length > 0) {
+      setData(selectedTribe, date);
+      filterData(selectedTribe, date); // Apply tribe and date filters after data is fetched
+    }
+  }, [dailyData, selectedTribe, date]);
+
+  useEffect(() => {
+    setCardData(filteredData);
+  }, [filteredData]);
 
   return (
     <>
@@ -165,16 +200,7 @@ const ECommerce: React.FC = () => {
 
             <div className='flex items-center gap-4'>
               <h2 className='text-black-0 font-semibold'>Time:</h2>
-              <select 
-                value={selectedReport}
-                onChange={handleReportChange}
-                className='p-2 bg-white text-black-0 dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
-                <option value="All">All Time</option>
-                <option value="Daily">Today</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-              </select>
+              <Datepicker options={options} onChange={handleChange} show={show} setShow={handleClose} />
             </div>
           </div>
           
@@ -279,11 +305,11 @@ const ECommerce: React.FC = () => {
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         {/* <ChartOne /> */}
-        <ChartSum 
+        {/* <ChartSum 
           period='Daily'
           tribe={selectedTribe}
         />
-        <ChartTwo />
+        <ChartTwo /> */}
         <ChartThree 
           present={presentCount}
           late={lateCount}
@@ -292,13 +318,14 @@ const ECommerce: React.FC = () => {
           tribe={selectedTribe}
           />
         <ChartFour 
-          period='Daily'
+          period={date}
         />
 
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>
         <ChatCard />
+        <ToastContainer />
       </div>
     </>
   );

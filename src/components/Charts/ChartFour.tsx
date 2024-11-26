@@ -77,16 +77,14 @@ const ChartFour: React.FC<ChartPeriodState> = ({ period }) => {
   });
 
   useEffect(() => {
-    if (period === "Daily") {
-      const fetchDailyData = async () => {
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
-        const late = "09:00";
-        const data = await fetchDailyReport(formattedDate, late);
-        setDailyData(data);
-      };
-      fetchDailyData();
-    }
+  
+    const fetchDailyData = async () => {
+      const late = "09:00";
+      const data = await fetchDailyReport(period, late);
+      setDailyData(data);
+    };
+    fetchDailyData();
+    
   }, [period]);
 
   useEffect(() => {
