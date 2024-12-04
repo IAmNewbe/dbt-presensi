@@ -114,7 +114,7 @@ const ChartThree: React.FC<ChartThreeProps> = ({ present, late, absent, total, t
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h5 className="text-xl font-semibold text-black dark:text-white">
-            {tribe} Attendance
+            <span className='text-blueeazy'>{tribe}</span> Attendance
           </h5>
         </div>
         <div>

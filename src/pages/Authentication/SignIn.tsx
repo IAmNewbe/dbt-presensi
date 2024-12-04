@@ -47,9 +47,7 @@ const SignIn: React.FC = () => {
     } catch (err: any) {
       setErrorMessage(err.response?.data?.message || 'Login failed. Please try again.');
       setError(true);
-      toast.error(`Error: ${errorMessage}, please try again`, { position: toast.POSITION.TOP_CENTER });
-      console.log(error);
-      console.log(errorMessage);
+      toast.error(`Error: ${err.response.data.message}, please try again`, { position: toast.POSITION.TOP_CENTER, hideProgressBar: true, autoClose: 2000 });
     } finally {
       setLoading(false);
     }

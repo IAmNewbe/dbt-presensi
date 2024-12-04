@@ -12,6 +12,8 @@ import DownloadButton from '../../components/Buttons/downloadButton';
 import { toast, ToastContainer } from 'react-toastify';
 import Datepicker from "tailwind-datepicker-react";
 import { setData } from './Filters';
+import { useNavigate } from 'react-router-dom';
+import TableFixedDate from '../../components/Tables/TableFixedDate';
 
 const options = {
 	title: "Select date",
@@ -64,10 +66,19 @@ const ECommerce: React.FC = () => {
   const [presentCount, setPresentCount] = useState(0);
   const [lateCount, setLateCount] = useState(0);
   const [totalEmployee, setTotalEmployee] = useState(0);
-  const token = localStorage.getItem('token');
   const [show, setShow] = useState<boolean >(false);
   const today = new Date().toISOString().split('T')[0];
   const [date, setDate] = useState(today);
+  const navigate = useNavigate();
+
+  const checkToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error(`Session time out, please log in again`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
+      navigate('/');
+      window.location.reload();
+    }
+  }
   
 	const handleChange = (selectedDate: Date) => {
     const formattedDate = selectedDate.toLocaleDateString('en-CA');
@@ -81,10 +92,11 @@ const ECommerce: React.FC = () => {
 	}
 
   useEffect(() => {
-    if (!token) {
-      toast.error(`Session time out, please log in again`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
-    }
-  }, [token]);
+    const interval = setInterval(() => {
+      checkToken();
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
  
   useEffect(() => {
     const fetchDailyData = async () => {
@@ -102,7 +114,12 @@ const ECommerce: React.FC = () => {
         const data = await fetchTribes(); // Fetch tribes using the service
         setTribes(data);
       } catch (err) {
-        toast.error(`${err}, please log in again`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
+        const token = localStorage.getItem('token');
+        if (!token) {
+          // toast.error(`${err}, please log in again`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
+        } else {
+          toast.error(`${err}`, { position: toast.POSITION.TOP_CENTER, autoClose: false });
+        }
         console.error(err);
       } finally {
         setLoading(false);
@@ -182,13 +199,13 @@ const ECommerce: React.FC = () => {
       <div className='mb-4 font-satoshi'>
         <section className='lg:flex justify-between items-center gap-4'>
           <div className='lg:flex gap-4 my-2 lg:my-0'>
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center gap-4 mb-2 lg:mb-0'>
               <h2 className='text-black-0 font-semibold'>Tribe:</h2>
               <select 
                 id="tribe-select"
                 value={selectedTribe}
                 onChange={handleTribeChange}
-                className='p-2 bg-white text-black-0 max-w-64 md:max-w-full dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
+                className='px-2 py-3 border bg-white rounded-md text-black-0 max-w-64 md:max-w-full dark:border-strokedark dark:text-white dark:bg-boxdark border-stroke border-b'>
                 <option value="All">All</option>
                 {tribes.map((item) => (
                   <option key={item.name} value={item.name}>
@@ -204,7 +221,7 @@ const ECommerce: React.FC = () => {
             </div>
           </div>
           
-          <DownloadButton />
+          <DownloadButton date={date}/>
         </section>
         
       </div>
@@ -322,7 +339,7 @@ const ECommerce: React.FC = () => {
         />
 
         <div className="col-span-12 xl:col-span-8">
-          <TableOne />
+          <TableFixedDate date={date} />
         </div>
         <ChatCard />
         <ToastContainer />

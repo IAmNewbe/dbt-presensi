@@ -1,18 +1,21 @@
 import React from 'react';
 import axios from 'axios';
+import SERVER from '../../common/config';
 
-const DownloadButton: React.FC = () => {
-  const baseUrl = "36.92.168.180";
-  const basePort = 7499;
-  const date = new Date();
-  const formattedDate = date.toISOString().split('T')[0];
+interface DownloadButtonProps {
+  date: string;
+}
+
+const DownloadButton: React.FC<DownloadButtonProps> = ({ date }) => {
+  const baseUrl = SERVER.baseURL;
+  const basePort = SERVER.basePORT;
   const handleDownload = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http:///${baseUrl}:${basePort}/api/download_presence_report_excel`,
+        `${baseUrl}:${basePort}/api/download_presence_report_excel`,
         {
-          date: formattedDate,
+          date: date,
           late_time: '09:00',
         },
         {
@@ -26,8 +29,7 @@ const DownloadButton: React.FC = () => {
 
       const contentDisposition = response.headers['Content-Disposition'];
       console.log(response);
-      let filename = new Date().toISOString().split('T')[0];
-      filename = 'Presence_Report_'+ filename +'.xlsx'; // Default filename
+      let filename = 'Presence_Report_'+ date +'.xlsx'; // Default filename
 
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="(.+)"/);
